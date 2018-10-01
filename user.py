@@ -14,4 +14,5 @@ class User(UserMixin, ndb.Model):
     name = ndb.StringProperty()
     pwd = ndb.StringProperty()
     
-    
+    def get_id(self):
+        return self.name

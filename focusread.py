@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request
-from flask_login import LoginManager
+from flask import Flask, render_template, request, url_for, flash, redirect
+from flask_login import LoginManager, login_user
 from user import User
+from google.appengine.ext import ndb
 
 
 fr = Flask(__name__)
+fr.secret_key = "super secret key"
+
 login_manager = LoginManager()
 login_manager.init_app(fr)
 
@@ -21,12 +24,32 @@ def user_register():
     if q == None:
         u = User(name=user, pwd=password)
         u.put()
-        return login("User {} registered successfully".format(user))
+        msg = "User {} registered successfully".format(user)
+        return login(msg)
     else:
-        return login("User {} exists. Try a new one".format(user))
-        
-        
+        msg = "User {} exists. Try a new one".format(user)
+        return login(msg)
+
+
+@fr.route("/authenticate", methods=['POST'])    
+def check_auth():
+    """
+    Authenticate the login credential.
     
+    If valid, login user and get Oauth tokens for Moves, Rescuetime.
+    Otherwise, redirect to login page and ask user to retry.
+    """
+    user = request.form.get("name")
+    password = request.form.get("password")
+    u = User.query(ndb.AND(User.name==user, User.pwd==password)).get()
+    if u != None:
+        login_user(u)
+        flash("Logged in successfully.")
+        return redirect(url_for("home"))
+    else:
+        return login("Wrong username or password. Please try again.")
+
+
 
 @fr.route('/')
 def home():
