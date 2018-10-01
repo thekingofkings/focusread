@@ -1,7 +1,11 @@
 from flask import Flask
+from flask_login import LoginManager
+from user import User
 
 
 fr = Flask(__name__)
+login_manager = LoginManager()
+login_manager.init_app(fr)
 
 
 @fr.route('/')

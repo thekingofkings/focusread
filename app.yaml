@@ -6,6 +6,8 @@ threadsafe: true
 handlers:
 - url: /.*
   script: focusread.fr
+- url: /static
+  static_dir: static
 
 
 libraries:
