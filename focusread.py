@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, render_template, request
 from flask_login import LoginManager
 from user import User
 
@@ -8,7 +8,7 @@ login_manager = LoginManager()
 login_manager.init_app(fr)
 
 
-@app.route("/login")
+@fr.route("/login")
 def login(message=""):
     return render_template("login.html", title="Login Page", message=message)
 
@@ -17,8 +17,13 @@ def login(message=""):
 def user_register():
     user = request.form.get("name")
     password = request.form.get("password")
-    q = User.query(User.name == 'user').get()
+    q = User.query(User.name == user).get()
     if q == None:
+        u = User(name=user, pwd=password)
+        u.put()
+        return login("User {} registered successfully".format(user))
+    else:
+        return login("User {} exists. Try a new one".format(user))
         
         
     

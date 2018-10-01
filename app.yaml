@@ -12,4 +12,6 @@ handlers:
 
 libraries:
 - name: flask
-  version: 0.12
+  version: latest 
+- name: ssl
+  version: latest
