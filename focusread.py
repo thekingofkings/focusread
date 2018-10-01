@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_required, login_user, logout_user
 from user import User
 from google.appengine.ext import ndb
 
@@ -50,8 +50,8 @@ def check_auth():
         return login("Wrong username or password. Please try again.")
 
 
-
 @fr.route('/')
+@login_required
 def home():
     """
     The index page
@@ -59,12 +59,21 @@ def home():
     return "<h1>Welcome to the FocusRead project!</h1>"
 
 
+@fr.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return login("Logged out successfully.")
+
 
 @fr.errorhandler(404)
 def page_not_fount(error):
     return "<h1>Page not fount!</h1>"
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query(User.name==user_id).get()
 
 
 if __name__ == '__main__':
