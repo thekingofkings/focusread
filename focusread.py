@@ -1,14 +1,17 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from user import User
 from google.appengine.ext import ndb
+from flask_socketio import SocketIO
 
 
 fr = Flask(__name__)
 fr.secret_key = "super secret key"
+socketio = SocketIO(fr)
 
 login_manager = LoginManager()
 login_manager.init_app(fr)
+login_manager.login_view = 'login'
 
 
 @fr.route("/login")
@@ -56,7 +59,7 @@ def home():
     """
     The index page
     """
-    return "<h1>Welcome to the FocusRead project!</h1>"
+    return render_template("home.html")
 
 
 @fr.route("/logout")
@@ -76,5 +79,21 @@ def load_user(user_id):
     return User.query(User.name==user_id).get()
 
 
+"""
+=========================
+   SocketIO function
+=========================
+"""
+@socketio.on('connect')
+def handle_connect():
+    print('User {} connected'.format(current_user.name))
+    
+    
+@socketio.on('message')
+def handle_message(message):
+    print('received message: ' + message)
+
+
 if __name__ == '__main__':
-    fr.run(debug=True)
+#    fr.run(debug=True)
+    socketio.run(fr)
