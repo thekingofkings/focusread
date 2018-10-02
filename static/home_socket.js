@@ -3,11 +3,16 @@ $(document).ready(function() {
     var socket = io.connect("http://localhost:8080");
 
     socket.on("connect", function() {
-        socket.send("User has connected!");
+        console.log("User is connecting ...");
     });
 
     socket.on("message", function(msg) {
+        $("#messages").append("<li>"+msg+"</li>");
         console.log("Received message: " + msg);
     });
 
+    $("#send").on('click', function() {
+        socket.send($("#myMsg").val());
+        $("#myMsg").val('');
+    });
 });

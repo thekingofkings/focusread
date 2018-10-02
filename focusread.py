@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from user import User
 from google.appengine.ext import ndb
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send
 
 
 fr = Flask(__name__)
@@ -86,12 +86,14 @@ def load_user(user_id):
 """
 @socketio.on('connect')
 def handle_connect():
-    print('User {} connected'.format(current_user.name))
+    msg = 'User {} connected'.format(current_user.name)
+    send(msg, broadcast=True)
     
     
 @socketio.on('message')
 def handle_message(message):
-    print('received message: ' + message)
+    msg = "{0}: {1}".format(current_user.name, message)
+    send(msg, broadcast=True)
 
 
 if __name__ == '__main__':
