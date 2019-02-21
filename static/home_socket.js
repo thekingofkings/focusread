@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
-    var socket = io.connect("http://localhost:8080");
+    var socket = io.connect("https://livealifekok.appspot.com");
+    //var socket = io.connect("http://localhost:8080");
 
     socket.on("connect", function() {
         console.log("User is connecting ...");
